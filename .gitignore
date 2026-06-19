@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+backend/staticfiles/
+*.sqlite3
+
+# Node / Next.js
+node_modules/
+frontend/.next/
+frontend/out/
+
+# Entorno
+.env
+.env.*
+!.env.example
+frontend/.env.local
+
+# IDE / OS
+.cursor/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
