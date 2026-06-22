@@ -1,0 +1,69 @@
+{% extends 'vehicles/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{{ title }}</h1>
+
+<section class="section" style="padding: 1.5rem;">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% for field in form %}
+    <div class="form-group">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {{ field.errors }}
+    </div>
+    {% endfor %}
+
+    <div class="form-group">
+      <label for="images">Imágenes</label>
+      <input type="file" name="images" id="images" class="form-input" accept="image/*" multiple>
+      <p class="form-hint">
+        Puedes seleccionar varias imágenes a la vez (JPG, PNG, WebP).
+      </p>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Guardar</button>
+      <a href="{% url 'dashboard' %}" class="btn">Cancelar</a>
+    </div>
+  </form>
+
+  {% if vehicle and vehicle.images.all %}
+  <div class="form-group" style="margin-top: 2rem;">
+    <label>Imágenes actuales</label>
+    <p class="form-hint">
+      Arrastra las imágenes para cambiar el orden. La primera será la portada en el catálogo.
+    </p>
+    <div
+      class="image-gallery"
+      id="image-gallery"
+      data-reorder-url="{% url 'vehicle-images-reorder' vehicle.pk %}"
+      data-csrf-token="{{ csrf_token }}"
+    >
+      {% for image in vehicle.images.all %}
+      <div class="image-thumb" draggable="true" data-id="{{ image.pk }}">
+        <span class="image-badge{% if not forloop.first %} image-badge-hidden{% endif %}">Principal</span>
+        <span class="drag-handle" title="Arrastrar para reordenar">⋮⋮</span>
+        <img src="{{ image.image.url }}" alt="Imagen del vehículo">
+        <form method="post" action="{% url 'vehicle-image-delete' image.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+    <p class="reorder-status" id="reorder-status" aria-live="polite"></p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% if vehicle and vehicle.images.all %}
+<script src="{% static 'vehicles/vehicle-images.js' %}"></script>
+{% endif %}
+{% endblock %}

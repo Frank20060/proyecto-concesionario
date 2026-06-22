@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import VehicleGallery from '@/components/VehicleGallery';
 import { getVehicle } from '@/lib/api/vehicles';
 import { formatDate, formatKm, formatPrice } from '@/lib/format';
 
@@ -28,7 +29,6 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
     { label: 'Modelo', value: vehicle.model },
     { label: 'Año', value: String(vehicle.year) },
     { label: 'Kilometraje', value: formatKm(vehicle.km) },
-    { label: 'Estado', value: vehicle.is_available ? 'En venta' : 'Vendido' },
     { label: 'Publicado', value: formatDate(vehicle.created_at) },
   ];
 
@@ -48,11 +48,10 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-5">
           <div className="lg:col-span-3">
-            <div className="flex aspect-[16/10] items-center justify-center border border-stone-200 bg-stone-100">
-              <span className="font-serif text-8xl font-light text-stone-300">
-                {vehicle.brand.charAt(0)}
-              </span>
-            </div>
+            <VehicleGallery
+              images={vehicle.images}
+              alt={`${vehicle.brand} ${vehicle.model}`}
+            />
 
             <div className="mt-10">
               <h2 className="text-sm font-medium uppercase tracking-wider text-stone-400">
@@ -94,6 +93,12 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
               </h1>
               <p className="mt-1 text-stone-500">{vehicle.year}</p>
 
+              {!vehicle.is_available && (
+                <div className="mt-4 border border-stone-300 bg-stone-100 px-4 py-3 text-sm text-stone-700">
+                  Este vehículo ya ha sido vendido
+                </div>
+              )}
+
               <p className="mt-6 text-3xl font-semibold text-stone-900">
                 {formatPrice(vehicle.price)}
               </p>
@@ -116,9 +121,9 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
                     </button>
                   </>
                 ) : (
-                  <div className="w-full border border-stone-200 bg-stone-50 px-6 py-3.5 text-center text-sm text-stone-500">
-                    Este vehículo ya ha sido vendido
-                  </div>
+                  <p className="text-sm text-stone-500">
+                    Este vehículo no está disponible para reserva
+                  </p>
                 )}
               </div>
 

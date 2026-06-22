@@ -1,0 +1,22 @@
+{% extends 'vehicles/base.html' %}
+
+{% block title %}Eliminar vehículo{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Eliminar vehículo</h1>
+
+<section class="section">
+  <div class="confirm-box">
+    <p>¿Seguro que quieres eliminar <strong>{{ vehicle.brand }} {{ vehicle.model }} ({{ vehicle.year }})</strong>?</p>
+    <p style="color: #78716c; font-size: 0.875rem;">Esta acción no se puede deshacer.</p>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-actions">
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <a href="{% url 'dashboard' %}" class="btn">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,177 @@
+{% extends 'vehicles/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Dashboard</h1>
+
+<div class="metrics">
+  <div class="metric-card">
+    <p class="value">{{ metrics.total }}</p>
+    <p class="label">Total vehículos</p>
+  </div>
+  <div class="metric-card">
+    <p class="value">{{ metrics.available_count }}</p>
+    <p class="label">Disponibles</p>
+  </div>
+  <div class="metric-card">
+    <p class="value">{{ metrics.sold_count }}</p>
+    <p class="label">Vendidos</p>
+  </div>
+  <div class="metric-card">
+    <p class="value">{{ metrics.stock_value|floatformat:0 }} €</p>
+    <p class="label">Valor del stock</p>
+  </div>
+  <div class="metric-card">
+    <p class="value">{{ metrics.avg_price|floatformat:0 }} €</p>
+    <p class="label">Precio medio</p>
+  </div>
+  <div class="metric-card">
+    <p class="value">{{ metrics.avg_km|floatformat:0 }}</p>
+    <p class="label">Km medio</p>
+  </div>
+</div>
+
+<div class="dashboard-layout">
+  <section class="section">
+    <div class="section-header">
+      <h2>Catálogo de vehículos</h2>
+      <a href="{% url 'vehicle-create' %}" class="btn btn-primary btn-sm">+ Añadir</a>
+    </div>
+
+    <form method="get" class="dashboard-filters" id="dashboard-filters">
+      <div class="dashboard-filters-top">
+        <div class="form-group dashboard-filter-field">
+          <label for="filter-brand" class="filter-label">Marca</label>
+          <select name="brand" id="filter-brand" class="form-input">
+            <option value="">Todas las marcas</option>
+            {% for brand in brands %}
+            <option value="{{ brand }}" {% if filters.brand == brand %}selected{% endif %}>{{ brand }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group dashboard-filter-field dashboard-filter-search">
+          <label for="filter-q" class="filter-label">Buscar</label>
+          <input
+            type="search"
+            name="q"
+            id="filter-q"
+            class="form-input"
+            value="{{ filters.q }}"
+            placeholder="Marca, modelo o ambos…"
+          >
+        </div>
+      </div>
+
+      <div class="dashboard-filters-bottom">
+        <div class="form-group dashboard-filter-status">
+          <label class="filter-label">Estado</label>
+          <div class="status-toggle">
+            <label class="status-toggle-btn">
+              <input type="radio" name="status" value="all" {% if filters.status == 'all' %}checked{% endif %}>
+              <span>Todos</span>
+            </label>
+            <label class="status-toggle-btn">
+              <input type="radio" name="status" value="available" {% if filters.status == 'available' %}checked{% endif %}>
+              <span>En venta</span>
+            </label>
+            <label class="status-toggle-btn">
+              <input type="radio" name="status" value="sold" {% if filters.status == 'sold' %}checked{% endif %}>
+              <span>Vendidos</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="dashboard-filters-actions">
+          <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+          {% if filters.brand or filters.q or filters.status != 'all' %}
+          <a href="{% url 'dashboard' %}" class="btn btn-sm">Limpiar</a>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+
+    {% if vehicles %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Marca / Modelo</th>
+          <th>Año</th>
+          <th>Precio</th>
+          <th>Km</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for vehicle in vehicles %}
+        <tr>
+          <td>
+            {% with first_image=vehicle.images.first %}
+            {% if first_image %}
+            <img src="{{ first_image.image.url }}" alt="" class="table-thumb">
+            {% else %}
+            <span class="table-thumb-placeholder">{{ vehicle.brand|slice:":1" }}</span>
+            {% endif %}
+            {% endwith %}
+          </td>
+          <td><strong>{{ vehicle.brand }}</strong> {{ vehicle.model }}</td>
+          <td>{{ vehicle.year }}</td>
+          <td>{{ vehicle.price|floatformat:0 }} €</td>
+          <td>{{ vehicle.km|floatformat:0 }} km</td>
+          <td>
+            {% if vehicle.is_available %}
+            <span class="badge badge-available">En venta</span>
+            {% else %}
+            <span class="badge badge-sold">Vendido</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="actions">
+              <a href="{% url 'vehicle-update' vehicle.pk %}" class="btn btn-sm">Editar</a>
+              <a href="{% url 'vehicle-delete' vehicle.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+      {% if filters.brand or filters.q or filters.status != 'all' %}
+      <p>No hay vehículos que coincidan con los filtros.</p>
+      <a href="{% url 'dashboard' %}" class="btn" style="margin-top: 1rem;">Limpiar filtros</a>
+      {% else %}
+      <p>No hay vehículos registrados.</p>
+      <a href="{% url 'vehicle-create' %}" class="btn btn-primary" style="margin-top: 1rem;">Añadir el primero</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2>Top marcas</h2>
+    </div>
+    {% if metrics.top_brands %}
+    <ul class="brand-list">
+      {% for item in metrics.top_brands %}
+      <li>
+        <span>{{ item.brand }}</span>
+        <strong>{{ item.count }}</strong>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state">Sin datos</div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'vehicles/dashboard-filters.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'vehicles/base.html' %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block body %}
+<div class="login-page">
+  <div class="login-box">
+    <h1>Grand Motors</h1>
+    <p>Accede al panel de gestión</p>
+
+    {% if form.errors %}
+    <ul class="messages">
+      <li class="error">Usuario o contraseña incorrectos.</li>
+    </ul>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="id_username">Usuario</label>
+        <input type="text" name="username" id="id_username" class="form-input" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="id_password">Contraseña</label>
+        <input type="password" name="password" id="id_password" class="form-input" required>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Entrar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -16,3 +16,20 @@ class Vehicle(models.Model):
 
     def __str__(self):
         return f'{self.brand} {self.model} ({self.year})'
+
+
+class VehicleImage(models.Model):
+    vehicle = models.ForeignKey(
+        Vehicle,
+        on_delete=models.CASCADE,
+        related_name='images',
+    )
+    image = models.ImageField(upload_to='vehicles/')
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', 'created_at']
+
+    def __str__(self):
+        return f'Imagen de {self.vehicle}'

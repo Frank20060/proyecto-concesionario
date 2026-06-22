@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Panel{% endblock %} · Grand Motors</title>
+  <link rel="stylesheet" href="{% static 'vehicles/dashboard.css' %}">
+</head>
+<body>
+  {% block body %}
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo">Grand Motors <span>· Panel</span></div>
+      {% if user.is_authenticated %}
+      <nav class="header-nav">
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'vehicle-create' %}">Añadir vehículo</a>
+        <span>{{ user.username }}</span>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm">Cerrar sesión</button>
+        </form>
+      </nav>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="container">
+    {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+  {% block extra_js %}{% endblock %}
+  {% endblock %}
+</body>
+</html>

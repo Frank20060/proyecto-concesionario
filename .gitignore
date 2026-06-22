@@ -5,6 +5,8 @@ __pycache__/
 .venv/
 venv/
 backend/staticfiles/
+backend/media/*
+!backend/media/.gitkeep
 *.sqlite3
 
 # Node / Next.js

@@ -1,18 +1,64 @@
+import { Suspense } from 'react';
+
+import VehicleFilters from '@/components/VehicleFilters';
 import VehicleGrid from '@/components/VehicleGrid';
-import { getVehicles } from '@/lib/api/vehicles';
+import {
+  getVehicleBrands,
+  getVehicles,
+  type VehicleListFilters,
+} from '@/lib/api/vehicles';
 import type { Vehicle } from '@/types/vehicle';
 
-export default async function Home() {
+interface HomeProps {
+  searchParams: Promise<{
+    brand?: string;
+    q?: string;
+    status?: string;
+  }>;
+}
+
+function parseFilters(params: {
+  brand?: string;
+  q?: string;
+  status?: string;
+}): VehicleListFilters {
+  return {
+    brand: params.brand?.trim() || undefined,
+    q: params.q?.trim() || undefined,
+    status: params.status === 'sold' ? 'sold' : 'available',
+  };
+}
+
+function FiltersFallback() {
+  return (
+    <div className="border border-stone-200 bg-stone-50 p-4 sm:p-5">
+      <p className="text-sm text-stone-500">Cargando filtros…</p>
+    </div>
+  );
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const params = await searchParams;
+  const filters = parseFilters(params);
+
   let vehicles: Vehicle[] = [];
+  let brands: string[] = [];
   let error: string | null = null;
 
   try {
-    vehicles = await getVehicles();
+    [vehicles, brands] = await Promise.all([
+      getVehicles(filters),
+      getVehicleBrands(),
+    ]);
   } catch (e) {
     error = e instanceof Error ? e.message : 'Error al cargar los vehículos';
   }
 
-  const availableCount = vehicles.filter((v) => v.is_available).length;
+  const isSoldView = filters.status === 'sold';
+  const resultLabel =
+    vehicles.length === 1
+      ? '1 vehículo encontrado'
+      : `${vehicles.length} vehículos encontrados`;
 
   return (
     <>
@@ -20,7 +66,7 @@ export default async function Home() {
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
           <div className="max-w-2xl">
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-stone-500">
-              Vehículos en stock
+              {isSoldView ? 'Histórico de ventas' : 'Vehículos en stock'}
             </p>
             <h1
               className="mt-3 font-serif text-4xl font-semibold leading-tight text-stone-900 sm:text-5xl"
@@ -37,12 +83,18 @@ export default async function Home() {
           {!error && vehicles.length > 0 && (
             <div className="mt-10 flex divide-x divide-stone-200 border border-stone-200 bg-white">
               <div className="flex-1 px-6 py-5">
-                <p className="text-2xl font-semibold text-stone-900">{vehicles.length}</p>
-                <p className="mt-0.5 text-sm text-stone-500">Vehículos publicados</p>
+                <p className="text-2xl font-semibold text-stone-900">
+                  {vehicles.length}
+                </p>
+                <p className="mt-0.5 text-sm text-stone-500">
+                  {isSoldView ? 'Vehículos vendidos' : 'Vehículos en venta'}
+                </p>
               </div>
               <div className="flex-1 px-6 py-5">
-                <p className="text-2xl font-semibold text-stone-900">{availableCount}</p>
-                <p className="mt-0.5 text-sm text-stone-500">Disponibles para venta</p>
+                <p className="text-2xl font-semibold text-stone-900">
+                  {brands.length}
+                </p>
+                <p className="mt-0.5 text-sm text-stone-500">Marcas en stock</p>
               </div>
               <div className="hidden flex-1 px-6 py-5 sm:block">
                 <p className="text-2xl font-semibold text-stone-900">12</p>
@@ -58,11 +110,20 @@ export default async function Home() {
           <h2 className="text-lg font-semibold text-stone-900">
             Catálogo de vehículos
           </h2>
-          {!error && vehicles.length > 0 && (
-            <p className="text-sm text-stone-500">
-              {availableCount} disponible{availableCount !== 1 ? 's' : ''}
-            </p>
+          {!error && (
+            <p className="text-sm text-stone-500">{resultLabel}</p>
           )}
+        </div>
+
+        <div className="mb-8">
+          <Suspense fallback={<FiltersFallback />}>
+            <VehicleFilters
+              brands={brands}
+              initialBrand={filters.brand ?? ''}
+              initialQ={filters.q ?? ''}
+              initialStatus={filters.status ?? 'available'}
+            />
+          </Suspense>
         </div>
 
         {error ? (
@@ -75,10 +136,12 @@ export default async function Home() {
         ) : vehicles.length === 0 ? (
           <div className="border border-stone-200 bg-stone-50 px-6 py-16 text-center">
             <p className="font-medium text-stone-700">
-              No hay vehículos en venta en este momento
+              {isSoldView
+                ? 'No hay vehículos vendidos con estos filtros'
+                : 'No hay vehículos en venta con estos filtros'}
             </p>
             <p className="mt-2 text-sm text-stone-500">
-              Consulte con nuestro equipo comercial para conocer próximas entradas
+              Prueba a cambiar la marca, la búsqueda o el estado del vehículo
             </p>
           </div>
         ) : (

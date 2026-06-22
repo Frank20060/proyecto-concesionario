@@ -1,5 +1,7 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
+import { getVehicleImageUrl } from '@/lib/images';
 import { formatKm, formatPrice } from '@/lib/format';
 import type { Vehicle } from '@/types/vehicle';
 
@@ -8,24 +10,34 @@ interface VehicleCardProps {
 }
 
 export default function VehicleCard({ vehicle }: VehicleCardProps) {
+  const imageUrl = getVehicleImageUrl(vehicle);
+
   return (
     <Link
       href={`/vehicles/${vehicle.id}`}
       className="group flex flex-col border border-stone-200 bg-white transition-shadow hover:shadow-md"
     >
-      <div className="relative flex aspect-[4/3] items-center justify-center bg-stone-100">
-        <span className="font-serif text-5xl font-light text-stone-300">
-          {vehicle.brand.charAt(0)}
-        </span>
-        <span
-          className={`absolute right-4 top-4 px-2.5 py-1 text-xs font-medium uppercase tracking-wide ${
-            vehicle.is_available
-              ? 'bg-white text-stone-700 ring-1 ring-stone-200'
-              : 'bg-stone-200 text-stone-500'
-          }`}
-        >
-          {vehicle.is_available ? 'En venta' : 'Vendido'}
-        </span>
+      <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
+        {!vehicle.is_available && (
+          <span className="absolute left-3 top-3 z-10 bg-stone-900 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-white">
+            Vendido
+          </span>
+        )}
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={`${vehicle.brand} ${vehicle.model}`}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <span className="font-serif text-5xl font-light text-stone-300">
+              {vehicle.brand.charAt(0)}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-5">

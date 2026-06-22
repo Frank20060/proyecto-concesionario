@@ -8,4 +8,5 @@ export interface Vehicle {
   description: string;
   is_available: boolean;
   created_at: string;
+  images: string[];
 }
