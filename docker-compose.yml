@@ -49,6 +49,7 @@ services:
       dockerfile: Dockerfile
     container_name: concesionario-frontend
     restart: unless-stopped
+    command: npx nodemon -L --watch app --watch components --watch lib --ext ts,tsx,css,json --exec "next dev -H 0.0.0.0"
     ports:
       - "3000:3000"
     volumes:
@@ -58,6 +59,8 @@ services:
     environment:
       API_INTERNAL_URL: http://backend:8000
       NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      WATCHPACK_POLLING: "true"
     depends_on:
       - backend
 
