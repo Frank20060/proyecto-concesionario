@@ -22,7 +22,7 @@ export function normalizeMediaUrl(url: string): string {
   return url
     .replace('http://backend:8000', '')
     .replace('https://backend:8000', '')
-    .replace(PUBLIC_API_URL, '')
+    .replace(PUBLIC_API_URL.replace(/\/$/, ''), '')
     .replace(/^https?:\/\/localhost:8000/, '');
 }
 

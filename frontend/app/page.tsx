@@ -1,112 +1,153 @@
-import Link from 'next/link';
+import { Suspense } from 'react';
 
-import HeroSection from '@/components/HeroSection';
-import TrustBar from '@/components/TrustBar';
-import UspSection from '@/components/UspSection';
-import WhatsAppButton from '@/components/WhatsAppButton';
+import VehicleFilters from '@/components/VehicleFilters';
 import VehicleGrid from '@/components/VehicleGrid';
-import { getVehicles } from '@/lib/api/vehicles';
+import {
+  getVehicleBrands,
+  getVehicles,
+  type VehicleListFilters,
+} from '@/lib/api/vehicles';
 import type { Vehicle } from '@/types/vehicle';
 
-export const dynamic = 'force-dynamic';
+interface HomeProps {
+  searchParams: Promise<{
+    brand?: string;
+    q?: string;
+    status?: string;
+  }>;
+}
 
-export default async function Home() {
-  let featuredVehicles: Vehicle[] = [];
+function parseFilters(params: {
+  brand?: string;
+  q?: string;
+  status?: string;
+}): VehicleListFilters {
+  return {
+    brand: params.brand?.trim() || undefined,
+    q: params.q?.trim() || undefined,
+    status: params.status === 'sold' ? 'sold' : 'available',
+  };
+}
+
+function FiltersFallback() {
+  return (
+    <div className="border border-stone-200 bg-stone-50 p-4 sm:p-5">
+      <p className="text-sm text-stone-500">Cargando filtros…</p>
+    </div>
+  );
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const params = await searchParams;
+  const filters = parseFilters(params);
+
+  let vehicles: Vehicle[] = [];
+  let brands: string[] = [];
   let error: string | null = null;
 
   try {
-    // Fetch only available vehicles for the homepage
-    const vehicles = await getVehicles({ status: 'available' });
-
-    // Server-side shuffle (Fisher-Yates) to ensure 3 random vehicles
-    // without hydration mismatches on the client.
-    const shuffled = [...vehicles];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-
-    featuredVehicles = shuffled.slice(0, 3);
+    [vehicles, brands] = await Promise.all([
+      getVehicles(filters),
+      getVehicleBrands(),
+    ]);
   } catch (e) {
     error = e instanceof Error ? e.message : 'Error al cargar los vehículos';
   }
 
+  const isSoldView = filters.status === 'sold';
+  const resultLabel =
+    vehicles.length === 1
+      ? '1 vehículo encontrado'
+      : `${vehicles.length} vehículos encontrados`;
+
   return (
     <>
-      {/* ── Hero — H1 único de la página ──────────────────────── */}
-      <HeroSection />
+      <section className="border-b border-stone-200 bg-stone-50">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+          <div className="max-w-2xl">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-stone-500">
+              {isSoldView ? 'Histórico de ventas' : 'Vehículos en stock'}
+            </p>
+            <h1
+              className="mt-3 font-serif text-4xl font-semibold leading-tight text-stone-900 sm:text-5xl"
+              style={{ fontFamily: 'var(--font-playfair), Georgia, serif' }}
+            >
+              Encuentre su próximo vehículo
+            </h1>
+            <p className="mt-5 text-base leading-relaxed text-stone-600 sm:text-lg">
+              Selección de automóviles revisados por nuestros técnicos.
+              Transparencia en precio, historial y condiciones de venta.
+            </p>
+          </div>
 
-      {/* ── Barra de confianza ─────────────────────────────────── */}
-      <TrustBar />
+          {!error && vehicles.length > 0 && (
+            <div className="mt-10 flex divide-x divide-stone-200 border border-stone-200 bg-white">
+              <div className="flex-1 px-6 py-5">
+                <p className="text-2xl font-semibold text-stone-900">
+                  {vehicles.length}
+                </p>
+                <p className="mt-0.5 text-sm text-stone-500">
+                  {isSoldView ? 'Vehículos vendidos' : 'Vehículos en venta'}
+                </p>
+              </div>
+              <div className="flex-1 px-6 py-5">
+                <p className="text-2xl font-semibold text-stone-900">
+                  {brands.length}
+                </p>
+                <p className="mt-0.5 text-sm text-stone-500">Marcas en stock</p>
+              </div>
+              <div className="hidden flex-1 px-6 py-5 sm:block">
+                <p className="text-2xl font-semibold text-stone-900">12</p>
+                <p className="mt-0.5 text-sm text-stone-500">Meses de garantía</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
-      {/* ── Vehículos Destacados ───────────────────────────────── */}
-      <section
-        id="destacados"
-        aria-labelledby="destacados-heading"
-        className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:px-8"
-      >
+      <section className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-baseline justify-between border-b border-stone-200 pb-4">
-          <h2
-            id="destacados-heading"
-            className="text-2xl font-bold text-stone-900"
-            tabIndex={-1}
-          >
-            Vehículos de ocasión destacados en Barcelona
+          <h2 className="text-lg font-semibold text-stone-900">
+            Catálogo de vehículos
           </h2>
+          {!error && (
+            <p className="text-sm text-stone-500">{resultLabel}</p>
+          )}
         </div>
 
-        {/* Resultados */}
+        <div className="mb-8">
+          <Suspense fallback={<FiltersFallback />}>
+            <VehicleFilters
+              brands={brands}
+              initialBrand={filters.brand ?? ''}
+              initialQ={filters.q ?? ''}
+              initialStatus={filters.status ?? 'available'}
+            />
+          </Suspense>
+        </div>
+
         {error ? (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-6 py-8 text-center">
-            <p className="font-semibold text-red-800">
-              No se pudo cargar el stock destacado
+          <div className="border border-red-200 bg-red-50 px-6 py-8 text-center">
+            <p className="font-medium text-red-800">
+              No se pudo cargar el catálogo
             </p>
             <p className="mt-1 text-sm text-red-600">{error}</p>
           </div>
-        ) : featuredVehicles.length === 0 ? (
-          <div className="rounded-xl border border-stone-200 bg-stone-50 px-6 py-16 text-center">
-            <p className="font-semibold text-stone-700">
-              No hay vehículos en venta en este momento
+        ) : vehicles.length === 0 ? (
+          <div className="border border-stone-200 bg-stone-50 px-6 py-16 text-center">
+            <p className="font-medium text-stone-700">
+              {isSoldView
+                ? 'No hay vehículos vendidos con estos filtros'
+                : 'No hay vehículos en venta con estos filtros'}
+            </p>
+            <p className="mt-2 text-sm text-stone-500">
+              Prueba a cambiar la marca, la búsqueda o el estado del vehículo
             </p>
           </div>
         ) : (
-          <VehicleGrid vehicles={featuredVehicles} />
-        )}
-
-        {/* CTA a catálogo completo */}
-        {!error && featuredVehicles.length > 0 && (
-          <div className="mt-12 text-center">
-            <Link
-              href="/catalogo"
-              className="inline-flex items-center gap-2 rounded-xl px-8 py-4 text-base font-bold text-white transition-opacity hover:opacity-90"
-              style={{ background: 'var(--color-brand)' }}
-            >
-              Ver todo el catálogo en stock
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="h-5 w-5"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </Link>
-          </div>
+          <VehicleGrid vehicles={vehicles} />
         )}
       </section>
-
-      {/* ── USP / Por qué elegirnos ───────────────────────────── */}
-      <div id="usp">
-        <UspSection />
-      </div>
-
-      {/* ── Botón flotante WhatsApp ───────────────────────────── */}
-      <WhatsAppButton />
     </>
   );
 }

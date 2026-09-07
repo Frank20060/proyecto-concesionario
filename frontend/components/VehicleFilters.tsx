@@ -1,7 +1,7 @@
 'use client';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState, useTransition } from 'react';
 
 interface VehicleFiltersProps {
   brands: string[];
@@ -16,21 +16,14 @@ export default function VehicleFilters({
   initialQ = '',
   initialStatus = 'available',
 }: VehicleFiltersProps) {
-  const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [q, setQ] = useState(initialQ);
-  const catalogHeadingRef = useRef<HTMLHeadingElement | null>(null);
 
   useEffect(() => {
     setQ(initialQ);
   }, [initialQ]);
-
-  // Referencia al H2 del catálogo para gestión de foco post-filtro
-  useEffect(() => {
-    catalogHeadingRef.current = document.querySelector<HTMLHeadingElement>('#catalog-heading');
-  }, []);
 
   const applyFilters = useCallback(
     (updates: {
@@ -65,14 +58,10 @@ export default function VehicleFilters({
 
       const queryString = params.toString();
       startTransition(() => {
-        router.push(queryString ? `${pathname}?${queryString}` : pathname);
-        // Mover foco al heading de resultados para anunciar cambio a lectores de pantalla
-        requestAnimationFrame(() => {
-          catalogHeadingRef.current?.focus();
-        });
+        router.push(queryString ? `/?${queryString}` : '/');
       });
     },
-    [router, pathname, searchParams, initialBrand, initialQ, initialStatus],
+    [router, searchParams, initialBrand, initialQ, initialStatus],
   );
 
   const hasActiveFilters =
@@ -87,16 +76,14 @@ export default function VehicleFilters({
 
   return (
     <div
-      className={`rounded-xl border border-stone-200 bg-stone-50 p-4 sm:p-5 ${isPending ? 'opacity-60' : ''}`}
-      aria-busy={isPending}
+      className={`border border-stone-200 bg-stone-50 p-4 sm:p-5 ${isPending ? 'opacity-70' : ''}`}
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
-          {/* Marca */}
           <div className="min-w-[180px]">
             <label
               htmlFor="filter-brand"
-              className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-stone-500"
+              className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-500"
             >
               Marca
             </label>
@@ -106,8 +93,7 @@ export default function VehicleFilters({
               onChange={(event) =>
                 applyFilters({ brand: event.target.value })
               }
-              disabled={isPending}
-              className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 transition-colors focus:border-amber-500 focus:outline-none disabled:opacity-60"
+              className="w-full border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 focus:border-stone-900 focus:outline-none"
             >
               <option value="">Todas las marcas</option>
               {brands.map((brand) => (
@@ -118,11 +104,10 @@ export default function VehicleFilters({
             </select>
           </div>
 
-          {/* Búsqueda */}
           <form onSubmit={handleSearchSubmit} className="min-w-[220px] flex-1">
             <label
               htmlFor="filter-q"
-              className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-stone-500"
+              className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-500"
             >
               Buscar
             </label>
@@ -133,14 +118,11 @@ export default function VehicleFilters({
                 value={q}
                 onChange={(event) => setQ(event.target.value)}
                 placeholder="Marca, modelo o ambos…"
-                disabled={isPending}
-                className="min-w-0 flex-1 rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none disabled:opacity-60"
+                className="min-w-0 flex-1 border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-900 focus:outline-none"
               />
               <button
                 type="submit"
-                disabled={isPending}
-                className="rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ background: 'var(--color-brand)' }}
+                className="border border-stone-900 bg-stone-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-stone-800"
               >
                 Buscar
               </button>
@@ -148,52 +130,30 @@ export default function VehicleFilters({
           </form>
         </div>
 
-        {/* Estado */}
         <div>
-          <span
-            id="status-filter-label"
-            className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-stone-500"
-          >
+          <span className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-500">
             Estado
           </span>
-          <div
-            className="inline-flex overflow-hidden rounded-lg border border-stone-300 bg-white"
-            role="group"
-            aria-labelledby="status-filter-label"
-          >
+          <div className="inline-flex border border-stone-300 bg-white">
             <button
               type="button"
               onClick={() => applyFilters({ status: 'available' })}
-              disabled={isPending}
-              aria-pressed={initialStatus === 'available'}
-              className={`px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-60 ${
+              className={`px-4 py-2.5 text-sm font-medium transition-colors ${
                 initialStatus === 'available'
-                  ? 'text-white'
-                  : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
+                  ? 'bg-stone-900 text-white'
+                  : 'text-stone-600 hover:text-stone-900'
               }`}
-              style={
-                initialStatus === 'available'
-                  ? { background: 'var(--color-brand)' }
-                  : undefined
-              }
             >
               En venta
             </button>
             <button
               type="button"
               onClick={() => applyFilters({ status: 'sold' })}
-              disabled={isPending}
-              aria-pressed={initialStatus === 'sold'}
-              className={`border-l border-stone-300 px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-60 ${
+              className={`border-l border-stone-300 px-4 py-2.5 text-sm font-medium transition-colors ${
                 initialStatus === 'sold'
-                  ? 'text-white'
-                  : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
+                  ? 'bg-stone-900 text-white'
+                  : 'text-stone-600 hover:text-stone-900'
               }`}
-              style={
-                initialStatus === 'sold'
-                  ? { background: 'var(--color-brand)' }
-                  : undefined
-              }
             >
               Vendidos
             </button>
@@ -209,7 +169,7 @@ export default function VehicleFilters({
               setQ('');
               applyFilters({ brand: '', q: '', status: 'available' });
             }}
-            className="rounded text-sm font-medium text-stone-500 underline underline-offset-2 transition-colors hover:text-stone-900"
+            className="text-sm font-medium text-stone-600 transition-colors hover:text-stone-900"
           >
             Limpiar filtros
           </button>
