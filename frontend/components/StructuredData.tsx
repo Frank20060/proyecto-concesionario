@@ -37,7 +37,7 @@ export function StructuredData(props: StructuredDataProps) {
   if (props.type === 'organization') {
     jsonLd = buildOrganizationSchema();
   } else if (props.type === 'vehicle') {
-    jsonLd = buildVehicleSchema(props.vehicle, props.price);
+    jsonLd = buildVehicleSchema(props.vehicle);
   } else if (props.type === 'faq') {
     jsonLd = buildFAQSchema(props.data);
   } else if (props.type === 'about') {
@@ -47,7 +47,6 @@ export function StructuredData(props: StructuredDataProps) {
   return (
     <script
       type="application/ld+json"
-      // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
     />
   );
@@ -122,7 +121,7 @@ function buildOrganizationSchema() {
   };
 }
 
-function buildVehicleSchema(vehicle: Vehicle, formattedPrice: string) {
+function buildVehicleSchema(vehicle: Vehicle) {
   const availability = vehicle.is_available
     ? 'https://schema.org/InStock'
     : 'https://schema.org/SoldOut';

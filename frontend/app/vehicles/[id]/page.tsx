@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -7,6 +8,25 @@ import { formatDate, formatKm, formatPrice } from '@/lib/format';
 
 interface VehicleDetailPageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: VehicleDetailPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const vehicleId = Number(id);
+  if (Number.isNaN(vehicleId)) return {};
+
+  try {
+    const vehicle = await getVehicle(vehicleId);
+    const price = formatPrice(vehicle.price);
+    const title = `${vehicle.brand} ${vehicle.model} ${vehicle.year} · ${price}`;
+    const description = `${vehicle.brand} ${vehicle.model} ${vehicle.year}. ${formatKm(vehicle.km)} · ${vehicle.description?.slice(0, 120) ?? ''}`;
+    return {
+      title,
+      description,
+    };
+  } catch {
+    return { title: 'Vehículo no encontrado' };
+  }
 }
 
 export default async function VehicleDetailPage({ params }: VehicleDetailPageProps) {

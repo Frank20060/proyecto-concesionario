@@ -74,7 +74,6 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
   }
 
   const price = formatPrice(vehicle.price);
-  const availability = vehicle.is_available ? 'Disponible' : 'Vendido';
   const interestedCount = 2 + (vehicleId % 5);
   const waMessage = `Hola, he visto el ${vehicle.brand} ${vehicle.model} ${vehicle.year} (${price}) en vuestra web y me gustaría más información. ¿Está disponible?`;
 

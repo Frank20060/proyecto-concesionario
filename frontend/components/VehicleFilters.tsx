@@ -19,11 +19,13 @@ export default function VehicleFilters({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const [prevInitialQ, setPrevInitialQ] = useState(initialQ);
   const [q, setQ] = useState(initialQ);
 
-  useEffect(() => {
+  if (prevInitialQ !== initialQ) {
+    setPrevInitialQ(initialQ);
     setQ(initialQ);
-  }, [initialQ]);
+  }
 
   const applyFilters = useCallback(
     (updates: {
