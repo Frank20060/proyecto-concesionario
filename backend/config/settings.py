@@ -16,11 +16,20 @@ SECRET_KEY = os.environ.get(
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = [
+allowed_hosts_env = os.environ.get('DJANGO_ALLOWED_HOSTS', '*')
+raw_hosts = [
     host.strip().replace('https://', '').replace('http://', '').rstrip('/')
-    for host in os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+    for host in allowed_hosts_env.split(',')
     if host.strip()
 ]
+
+# Incluimos siempre '*' y dominios de Render/localhost para que las peticiones internas de Render (health checks) no fallen con 400 Bad Request
+defaults = ['*', '.onrender.com', 'localhost', '127.0.0.1', '0.0.0.0']
+for default_host in defaults:
+    if default_host not in raw_hosts:
+        raw_hosts.append(default_host)
+
+ALLOWED_HOSTS = raw_hosts
 
 INSTALLED_APPS = [
     'django.contrib.admin',
