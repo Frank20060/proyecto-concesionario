@@ -17,7 +17,7 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = [
-    host.strip()
+    host.strip().replace('https://', '').replace('http://', '').rstrip('/')
     for host in os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
     if host.strip()
 ]
@@ -121,7 +121,7 @@ STORAGES = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    origin.strip()
+    origin.strip().rstrip('/')
     for origin in os.environ.get(
         'CORS_ALLOWED_ORIGINS',
         'http://localhost:3000',
@@ -130,7 +130,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
+    origin.strip().rstrip('/')
     for origin in os.environ.get(
         'CSRF_TRUSTED_ORIGINS',
         'http://localhost:3000,http://localhost:8000',
