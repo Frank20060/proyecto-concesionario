@@ -17,7 +17,7 @@ Monorepo con dos servicios:
 2. En Render: **New → Blueprint** → conecta el repo.
 3. Render lee [`render.yaml`](render.yaml) y crea:
    - PostgreSQL (`concesionario-db`)
-   - Web service Python (`concesionario-api`)
+   - Web service Python (`intragrandmotors`)
    - Disco persistente de 1 GB en `/app/media` (fotos de vehículos)
 
 ### Opción B — Manual
@@ -37,11 +37,11 @@ Copia desde [`backend/.env.example`](backend/.env.example) y ajusta:
 |----------|---------|
 | `DJANGO_SECRET_KEY` | (Render puede generarla) |
 | `DJANGO_DEBUG` | `False` |
-| `DJANGO_ALLOWED_HOSTS` | `concesionario-api.onrender.com` |
+| `DJANGO_ALLOWED_HOSTS` | `intragrandmotors.onrender.com` |
 | `DATABASE_URL` | (automática si vinculas la BD) |
-| `CORS_ALLOWED_ORIGINS` | `https://tu-proyecto.vercel.app` |
-| `CSRF_TRUSTED_ORIGINS` | `https://tu-proyecto.vercel.app,https://concesionario-api.onrender.com` |
-| `PUBLIC_BASE_URL` | `https://concesionario-api.onrender.com` |
+| `CORS_ALLOWED_ORIGINS` | `https://grandmotors.vercel.app` |
+| `CSRF_TRUSTED_ORIGINS` | `https://grandmotors.vercel.app,https://intragrandmotors.onrender.com` |
+| `PUBLIC_BASE_URL` | `https://intragrandmotors.onrender.com` |
 | `MEDIA_ROOT` | `/app/media` |
 
 ### Primer arranque
@@ -52,9 +52,9 @@ En **Render Shell** del servicio web:
 python manage.py createsuperuser
 ```
 
-- Dashboard admin: `https://concesionario-api.onrender.com/`
-- API JSON: `https://concesionario-api.onrender.com/api/vehicles/`
-- Health: `https://concesionario-api.onrender.com/health/`
+- Dashboard admin: `https://intragrandmotors.onrender.com/`
+- API JSON: `https://intragrandmotors.onrender.com/api/vehicles/`
+- Health: `https://intragrandmotors.onrender.com/health/`
 
 ---
 
@@ -67,9 +67,9 @@ python manage.py createsuperuser
 
 | Variable | Valor |
 |----------|-------|
-| `NEXT_PUBLIC_SITE_URL` | `https://tu-proyecto.vercel.app` |
-| `NEXT_PUBLIC_API_URL` | `https://concesionario-api.onrender.com` |
-| `API_INTERNAL_URL` | `https://concesionario-api.onrender.com` |
+| `NEXT_PUBLIC_SITE_URL` | `https://grandmotors.vercel.app` |
+| `NEXT_PUBLIC_API_URL` | `https://intragrandmotors.onrender.com` |
+| `API_INTERNAL_URL` | `https://intragrandmotors.onrender.com` |
 
 5. Deploy.
 
@@ -82,8 +82,8 @@ El frontend llama a la API de Render en build (sitemap) y en runtime. Las imáge
 Después del primer deploy de Vercel, actualiza en **Render**:
 
 ```
-CORS_ALLOWED_ORIGINS=https://tu-dominio-real.vercel.app
-CSRF_TRUSTED_ORIGINS=https://tu-dominio-real.vercel.app,https://concesionario-api.onrender.com
+CORS_ALLOWED_ORIGINS=https://grandmotors.vercel.app
+CSRF_TRUSTED_ORIGINS=https://grandmotors.vercel.app,https://intragrandmotors.onrender.com
 ```
 
 Redeploy del backend si cambias CORS.
