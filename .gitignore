@@ -5,7 +5,7 @@ __pycache__/
 .venv/
 venv/
 backend/staticfiles/
-backend/media/*
+!backend/media/vehicles/
 !backend/media/.gitkeep
 *.sqlite3
 
