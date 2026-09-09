@@ -24,6 +24,11 @@ function getRemoteImagePatterns(): NonNullable<
       port: '8000',
       pathname: '/media/**',
     },
+    {
+      protocol: 'https',
+      hostname: '*.onrender.com',
+      pathname: '/media/**',
+    },
   ];
 
   try {

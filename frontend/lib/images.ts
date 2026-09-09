@@ -6,24 +6,40 @@ import type { Vehicle } from '@/types/vehicle';
  * para que next/image las sirva vía rewrite al backend (Docker-safe).
  */
 export function normalizeMediaUrl(url: string): string {
-  if (url.startsWith('/media/')) {
-    return url;
+  if (!url) {
+    return '';
+  }
+
+  const trimmed = url.trim();
+  if (!trimmed) {
+    return '';
+  }
+
+  if (trimmed.startsWith('/media/')) {
+    return trimmed;
+  }
+
+  const mediaMatch = trimmed.match(/^(?:https?:\/\/[^/]+)?(\/media\/.*)$/i);
+  if (mediaMatch) {
+    return mediaMatch[1];
   }
 
   try {
-    const parsed = new URL(url);
+    const parsed = new URL(trimmed);
     if (parsed.pathname.startsWith('/media/')) {
       return parsed.pathname;
     }
   } catch {
-    // URL relativa sin barra inicial
+    // URL relativa o sin protocolo
   }
 
-  return url
+  return trimmed
     .replace('http://backend:8000', '')
     .replace('https://backend:8000', '')
+    .replace('http://localhost:8000', '')
+    .replace('https://localhost:8000', '')
     .replace(PUBLIC_API_URL.replace(/\/$/, ''), '')
-    .replace(/^https?:\/\/localhost:8000/, '');
+    .replace(/^https?:\/\/[^/]+(?=\/media\/)/, '');
 }
 
 export function getVehicleImageUrl(vehicle: Vehicle): string | null {
