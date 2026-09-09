@@ -16,6 +16,11 @@ from .models import Vehicle, VehicleImage
 
 def vehicle_to_dict(vehicle, request=None):
     base = settings.PUBLIC_BASE_URL.rstrip('/')
+    if request is not None:
+        request_base = request.build_absolute_uri('/').rstrip('/')
+        if request_base and request_base != 'http://testserver':
+            base = request_base
+
     return {
         'id': vehicle.id,
         'brand': vehicle.brand,

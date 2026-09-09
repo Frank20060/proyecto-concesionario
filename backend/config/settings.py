@@ -151,7 +151,11 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
 
-PUBLIC_BASE_URL = os.environ.get('PUBLIC_BASE_URL', 'http://localhost:8000').rstrip('/')
+PUBLIC_BASE_URL = os.environ.get('PUBLIC_BASE_URL', '').strip().rstrip('/')
+if not PUBLIC_BASE_URL:
+    PUBLIC_BASE_URL = os.environ.get('RENDER_EXTERNAL_URL', '').strip().rstrip('/')
+if not PUBLIC_BASE_URL:
+    PUBLIC_BASE_URL = 'http://localhost:8000'
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
