@@ -1,62 +1,43 @@
-import { Suspense } from 'react';
+import Link from 'next/link';
 
-import VehicleFilters from '@/components/VehicleFilters';
 import VehicleGrid from '@/components/VehicleGrid';
 import DecorativeOrbits from '@/components/DecorativeOrbits';
 import {
-  getVehicleBrands,
   getVehicles,
   type VehicleListFilters,
 } from '@/lib/api/vehicles';
 import type { Vehicle } from '@/types/vehicle';
 
-interface HomeProps {
-  searchParams: Promise<{
-    brand?: string;
-    q?: string;
-  }>;
+function pickRandomVehicles(vehicles: Vehicle[], limit: number): Vehicle[] {
+  const shuffled = [...vehicles];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[randomIndex]] = [
+      shuffled[randomIndex],
+      shuffled[index],
+    ];
+  }
+
+  return shuffled.slice(0, limit);
 }
 
-function parseFilters(params: {
-  brand?: string;
-  q?: string;
-}): VehicleListFilters {
-  return {
-    brand: params.brand?.trim() || undefined,
-    q: params.q?.trim() || undefined,
-    status: 'available',
-  };
-}
-
-function FiltersFallback() {
-  return (
-    <div className="border border-stone-200 bg-stone-50 p-4 sm:p-5">
-      <p className="text-sm text-stone-500">Cargando filtros…</p>
-    </div>
-  );
-}
-
-export default async function Home({ searchParams }: HomeProps) {
-  const params = await searchParams;
-  const filters = parseFilters(params);
-
+export default async function Home() {
   let vehicles: Vehicle[] = [];
-  let brands: string[] = [];
   let error: string | null = null;
 
   try {
-    [vehicles, brands] = await Promise.all([
-      getVehicles(filters),
-      getVehicleBrands(),
-    ]);
+    const filters: VehicleListFilters = { status: 'available' };
+    vehicles = await getVehicles(filters);
   } catch (e) {
     error = e instanceof Error ? e.message : 'Error al cargar los vehículos';
   }
 
+  const featuredVehicles = pickRandomVehicles(vehicles, 3);
   const resultLabel =
-    vehicles.length === 1
+    featuredVehicles.length === 1
       ? '1 vehículo encontrado'
-      : `${vehicles.length} vehículos encontrados`;
+      : `${featuredVehicles.length} vehículos destacados`;
 
   return (
     <>
@@ -84,7 +65,7 @@ export default async function Home({ searchParams }: HomeProps) {
             <div className="stats-panel mt-10 flex divide-x rounded-2xl border bg-white/5 backdrop-blur-sm">
               <div className="flex-1 px-4 py-5 sm:px-6">
                 <p className="text-2xl font-semibold text-orange-400">
-                  {vehicles.length}
+                  {featuredVehicles.length}
                 </p>
                 <p className="mt-0.5 text-sm text-stone-400">Vehículos en venta</p>
               </div>
@@ -101,21 +82,11 @@ export default async function Home({ searchParams }: HomeProps) {
         <div className="mx-auto w-full max-w-7xl">
         <div className="mb-8 flex items-baseline justify-between border-b border-stone-200 pb-4">
           <h2 id="catalogo" className="text-xl font-semibold text-stone-900">
-            Catálogo de vehículos
+            Este podría ser tu próximo coche
           </h2>
           {!error && (
             <p className="text-sm text-stone-500">{resultLabel}</p>
           )}
-        </div>
-
-        <div className="mb-8">
-          <Suspense fallback={<FiltersFallback />}>
-            <VehicleFilters
-              brands={brands}
-              initialBrand={filters.brand ?? ''}
-              initialQ={filters.q ?? ''}
-            />
-          </Suspense>
         </div>
 
         {error ? (
@@ -125,7 +96,7 @@ export default async function Home({ searchParams }: HomeProps) {
             </p>
             <p className="mt-1 text-sm text-red-600">{error}</p>
           </div>
-        ) : vehicles.length === 0 ? (
+        ) : featuredVehicles.length === 0 ? (
           <div className="border border-stone-200 bg-stone-50 px-6 py-16 text-center">
             <p className="font-medium text-stone-700">
               No hay vehículos en venta con estos filtros
@@ -135,7 +106,17 @@ export default async function Home({ searchParams }: HomeProps) {
             </p>
           </div>
         ) : (
-          <VehicleGrid vehicles={vehicles} />
+          <>
+            <VehicleGrid vehicles={featuredVehicles} />
+            <div className="mt-10 flex justify-center">
+              <Link
+                href="/vehicles"
+                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-orange-700 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-800"
+              >
+                Ver catálogo completo
+              </Link>
+            </div>
+          </>
         )}
         </div>
       </section>
