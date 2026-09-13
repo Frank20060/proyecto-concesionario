@@ -112,7 +112,13 @@
           <td>
             {% with first_image=vehicle.images.first %}
             {% if first_image %}
+            {% if first_image.cloudinary_url %}
+            <img src="{{ first_image.cloudinary_url }}" alt="" class="table-thumb">
+            {% elif first_image.image %}
             <img src="{{ first_image.image.url }}" alt="" class="table-thumb">
+            {% else %}
+            <span class="table-thumb-placeholder">{{ vehicle.brand|slice:":1" }}</span>
+            {% endif %}
             {% else %}
             <span class="table-thumb-placeholder">{{ vehicle.brand|slice:":1" }}</span>
             {% endif %}

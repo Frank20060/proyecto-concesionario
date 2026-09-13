@@ -48,7 +48,11 @@
       <div class="image-thumb" draggable="true" data-id="{{ image.pk }}">
         <span class="image-badge{% if not forloop.first %} image-badge-hidden{% endif %}">Principal</span>
         <span class="drag-handle" title="Arrastrar para reordenar">⋮⋮</span>
+        {% if image.cloudinary_url %}
+        <img src="{{ image.cloudinary_url }}" alt="Imagen del vehículo">
+        {% elif image.image %}
         <img src="{{ image.image.url }}" alt="Imagen del vehículo">
+        {% endif %}
         <form method="post" action="{% url 'vehicle-image-delete' image.pk %}">
           {% csrf_token %}
           <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
