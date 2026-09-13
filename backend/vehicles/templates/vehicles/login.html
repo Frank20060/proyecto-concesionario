@@ -5,6 +5,11 @@
 {% block body %}
 <div class="login-page">
   <div class="login-box">
+    <label class="theme-toggle login-theme-toggle" title="Cambiar tema">
+      <input type="checkbox" id="theme-toggle" aria-label="Cambiar entre tema claro y oscuro">
+      <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
+      <span class="theme-toggle-label">Tema</span>
+    </label>
     <h1>Grand Motors</h1>
     <p>Accede al panel de gestión</p>
 
@@ -30,4 +35,17 @@
     </form>
   </div>
 </div>
+<script>
+  (function () {
+    var root = document.documentElement;
+    var toggle = document.getElementById('theme-toggle');
+    if (!toggle) return;
+    toggle.checked = root.dataset.theme === 'dark';
+    toggle.addEventListener('change', function () {
+      var theme = toggle.checked ? 'dark' : 'light';
+      root.dataset.theme = theme;
+      localStorage.setItem('gm-admin-theme', theme);
+    });
+  }());
+</script>
 {% endblock %}

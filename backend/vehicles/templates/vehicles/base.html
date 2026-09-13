@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Panel{% endblock %} · Grand Motors</title>
   <link rel="stylesheet" href="{% static 'vehicles/dashboard.css' %}">
+  <script>
+    (function () {
+      var theme = localStorage.getItem('gm-admin-theme') || 'light';
+      document.documentElement.dataset.theme = theme;
+    }());
+  </script>
 </head>
 <body>
   {% block body %}
@@ -17,6 +23,11 @@
         <a href="{% url 'dashboard' %}">Dashboard</a>
         <a href="{% url 'vehicle-create' %}">Añadir vehículo</a>
         <span>{{ user.username }}</span>
+        <label class="theme-toggle" title="Cambiar tema">
+          <input type="checkbox" id="theme-toggle" aria-label="Cambiar entre tema claro y oscuro">
+          <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
+          <span class="theme-toggle-label">Tema</span>
+        </label>
         <form method="post" action="{% url 'logout' %}" style="display:inline;">
           {% csrf_token %}
           <button type="submit" class="btn btn-sm">Cerrar sesión</button>
@@ -38,6 +49,19 @@
     {% block content %}{% endblock %}
   </main>
   {% block extra_js %}{% endblock %}
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var toggle = document.getElementById('theme-toggle');
+      if (!toggle) return;
+      toggle.checked = root.dataset.theme === 'dark';
+      toggle.addEventListener('change', function () {
+        var theme = toggle.checked ? 'dark' : 'light';
+        root.dataset.theme = theme;
+        localStorage.setItem('gm-admin-theme', theme);
+      });
+    }());
+  </script>
   {% endblock %}
 </body>
 </html>
