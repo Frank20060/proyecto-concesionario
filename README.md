@@ -1,89 +1,151 @@
-# 🚗 Concesionario de Vehículos de Ocasión — Grand Motors
+# Grand Motors
 
-Sistema web full-stack monorepo para la gestión y publicación de catálogo de vehículos de ocasión, compuesto por una web pública orientada a SEO y conversión (Next.js 16) y un panel de administración con API REST (Django 5 + PostgreSQL).
+> Plataforma full-stack para la publicación y gestión de vehículos de ocasión.
 
----
+[![Frontend](https://img.shields.io/badge/frontend-Next.js%2016-black?logo=next.js)](frontend/)
+[![Backend](https://img.shields.io/badge/backend-Django%205-0c4b33?logo=django)](backend/)
+[![Database](https://img.shields.io/badge/database-PostgreSQL-336791?logo=postgresql)](https://www.postgresql.org/)
+[![Deploy](https://img.shields.io/badge/deploy-Vercel%20%2B%20Render-111111?logo=vercel)](DEPLOY.md)
 
-## 🌟 Características Principales
+Grand Motors es un monorepo que combina una experiencia pública de catálogo, optimizada para SEO y conversión, con un panel privado para gestionar el inventario de un concesionario. El proyecto está diseñado como una aplicación real: catálogo filtrable, fichas de vehículo, galería de imágenes, gestión de stock y despliegue separado de frontend y backend.
 
-- **Catálogo Interactivo**: Filtrado en tiempo real por marca, término de búsqueda y estado (disponible / vendido).
-- **SEO de Alto Rendimiento**:
-  - Rutas amigables con slug decorativo (`/vehicles/123/bmw-m3-2021`).
-  - Metadatos dinámicos (`generateMetadata`), Open Graph y Twitter Cards para redes sociales.
-  - Datos estructurados **JSON-LD (Schema.org)** para `AutoDealer`, `Car`, `Offer` y `FAQPage`.
-  - Generación dinámica de `sitemap.xml` y `robots.txt`.
-- **Panel de Gestión Admin**: Dashboard integrado en Django para alta, edición, ordenación de imágenes y eliminación de vehículos.
-- **Autosembrado de Datos (`seed_db`)**: Inicialización automática con superusuario por defecto y vehículos de muestra con fotografías reales.
-- **Diseño Responsive & UI de Altas Prestaciones**: Estilo limpio desarrollado con Tailwind CSS, tipografía optimizada y componentes de interacción rápida (WhatsApp directo, galería de imágenes, ficha técnica).
+## Demo
 
----
+- **Web pública:** [grandmotors.vercel.app](https://grandmotors.vercel.app)
+- **API y panel:** [intragrandmotors.onrender.com](https://intragrandmotors.onrender.com)
 
-## 🛠️ Stack Tecnológico
+> Las URLs de demo dependen de la configuración activa de los servicios desplegados.
 
-### Frontend (`/frontend`)
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router & Turbopack)
-- **Biblioteca UI**: React 19 + TypeScript
-- **Estilos**: Tailwind CSS v4
-- **Optimización**: `next/image` y fuentes optimizadas
+## Qué incluye
 
-### Backend (`/backend`)
-- **Lenguaje / Framework**: Python 3.12 + [Django 5](https://www.djangoproject.com/)
-- **Servidor de Producción**: Gunicorn
-- **Servicio de Archivos Estáticos**: WhiteNoise
-- **Base de Datos**: PostgreSQL / SQLite (desarrollo local)
-- **Imágenes**: Pillow + FileSystemStorage (`/media/vehicles/`)
+### Catálogo público
 
-### Infraestructura & Despliegue
-- **Contenedores**: Docker & Docker Compose
-- **Backend & BD**: [Render](https://render.com) (Blueprint con PostgreSQL)
-- **Frontend**: [Vercel](https://vercel.com)
+- Listado de vehículos disponibles y vendidos.
+- Filtros por marca, texto y estado.
+- Fichas individuales con URL amigable y slug decorativo.
+- Galería responsive con selección de imagen principal.
+- Información técnica, precio, kilometraje y descripción.
+- Acciones de contacto y acceso directo a WhatsApp.
 
----
+### SEO y rendimiento
 
-## 📐 Decisiones de Arquitectura y Diseño
+- App Router de Next.js con renderizado server-side.
+- Metadatos dinámicos por vehículo.
+- Open Graph y Twitter Cards.
+- Datos estructurados JSON-LD para concesionario, vehículos, ofertas y preguntas frecuentes.
+- `sitemap.xml` y `robots.txt` generados desde la aplicación.
+- `next/image` y transformaciones `f_auto,q_auto` de Cloudinary.
 
-1. **Separación Frontend / Backend (Monorepo)**:
-   - Permite que el frontend sea ultra-rápido mediante SSR/SSG en Vercel, mientras el backend en Django se encarga de la seguridad, panel administrativo y gestión de datos.
+### Panel de gestión
 
-2. **Rutas con Slugs Decorativos para SEO**:
-   - Las URLs incluyen el nombre y año del coche (ej: `/vehicles/42/audi-a4-avant-2021`), pero la lógica interna solo utiliza la ID numérica. Esto optimiza el posicionamiento en motores de búsqueda sin añadir fragilidad al sistema de routing.
+- Autenticación de Django.
+- Alta, edición y eliminación de vehículos.
+- Carga múltiple de imágenes.
+- Ordenación drag and drop de la galería.
+- Gestión de vehículos disponibles y vendidos.
+- Filtros y métricas de inventario.
 
-3. **Sembrado Automático en el Despliegue (`seed_db`)**:
-   - En el `build.sh` del backend se ejecuta la orden `python manage.py seed_db`. Si la base de datos está recién creada, genera automáticamente el superusuario administrador y crea un catálogo de vehículos de muestra con imágenes precargadas.
+### Almacenamiento de imágenes
 
-4. **Resiliencia de Entorno y CORS/CSRF**:
-   - El archivo `settings.py` cuenta con funciones de saneamiento que eliminan automáticamente prefijos (`https://`) y barras finales (`/`) en variables de entorno como `DJANGO_ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS` y `CSRF_TRUSTED_ORIGINS`, asegurando compatibilidad total con Render y Vercel.
+- Cloudinary como almacenamiento principal en producción.
+- Subidas firmadas desde Django mediante el SDK oficial.
+- URLs `secure_url` guardadas en la base de datos.
+- Migración incluida para imágenes históricas almacenadas localmente.
+- Fallback temporal a archivos locales durante la transición.
 
----
+## Arquitectura
 
-## 🚀 Cómo Usar el Proyecto
+```text
+                         +----------------------+
+                         |       Vercel         |
+                         |  Next.js + React     |
+                         +----------+-----------+
+                                    | HTTPS / JSON
+                                    v
+                         +----------------------+
+                         |       Render         |
+                         | Django + Gunicorn    |
+                         +-------+-------+------+
+                                 |       |
+                                 v       v
+                         PostgreSQL  Cloudinary
+                         inventario   imágenes
+```
 
-### Opción 1: Desarrollo Local con Docker (Recomendado)
+El frontend público vive en Next.js y consume la API de Django. Django concentra la autenticación, las operaciones de inventario y las subidas firmadas. PostgreSQL almacena los datos de negocio y Cloudinary sirve las imágenes desde su CDN.
 
-Ejecuta ambos servicios (Backend en puerto 8000 y Frontend en puerto 3000) en una sola orden:
+## Stack
+
+### Frontend
+
+- Next.js 16 y React 19.
+- TypeScript.
+- Tailwind CSS 4.
+- App Router, Server Components y generación dinámica de metadata.
+- `next/image` para renderizado optimizado.
+
+### Backend
+
+- Python 3.12.
+- Django 5.
+- API JSON propia.
+- PostgreSQL con `dj-database-url`.
+- Gunicorn para producción.
+- WhiteNoise para archivos estáticos.
+- Cloudinary SDK para imágenes.
+
+### Infraestructura
+
+- Vercel para el frontend.
+- Render para backend y PostgreSQL.
+- Cloudinary para almacenamiento y CDN de imágenes.
+- Docker Compose para desarrollo local.
+
+## Estructura del monorepo
+
+```text
+.
+├── backend/
+│   ├── config/              # Configuración Django
+│   ├── vehicles/            # Modelos, API, panel y plantillas
+│   ├── scripts/             # Migración de imágenes a Cloudinary
+│   ├── manage.py
+│   └── requirements.txt
+├── frontend/
+│   ├── app/                 # Rutas públicas Next.js
+│   ├── components/          # Componentes de interfaz
+│   ├── lib/                 # API, imágenes y configuración
+│   └── types/
+├── docker-compose.yml
+├── render.yaml
+└── DEPLOY.md
+```
+
+## Ejecutar en local
+
+### Con Docker
 
 ```bash
 docker compose up --build
 ```
 
-- **Web Pública**: [http://localhost:3000](http://localhost:3000)
-- **Dashboard Admin (Django)**: [http://localhost:8000/admin/](http://localhost:8000/admin/)
-- **Credenciales Admin por defecto**:
-  - **Usuario**: `admin`
-  - **Contraseña**: `admin1234`
+- Web pública: <http://localhost:3000>
+- Dashboard Django: <http://localhost:8000>
+- API: <http://localhost:8000/api/vehicles/>
 
----
+### Sin Docker
 
-### Opción 2: Desarrollo Local Manual
+Backend:
 
-#### 1. Backend (Django)
 ```bash
 cd backend
-python -m venv venv
-# En Windows:
-.\venv\Scripts\activate
-# En Mac/Linux:
-source venv/bin/activate
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+
+# macOS/Linux
+# source .venv/bin/activate
 
 pip install -r requirements.txt
 python manage.py migrate
@@ -91,38 +153,72 @@ python manage.py seed_db
 python manage.py runserver 0.0.0.0:8000
 ```
 
-#### 2. Frontend (Next.js)
+Frontend, en otra terminal:
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
----
+## Variables de entorno
 
-## ☁️ Despliegue en Producción (Render + Vercel)
+### Backend
 
-Para más detalles, consulta la guía completa en [DEPLOY.md](DEPLOY.md).
+```env
+DJANGO_SECRET_KEY=...
+DJANGO_DEBUG=False
+DATABASE_URL=...
+DJANGO_ALLOWED_HOSTS=...
+CORS_ALLOWED_ORIGINS=...
+CSRF_TRUSTED_ORIGINS=...
+PUBLIC_BASE_URL=https://tu-backend.onrender.com
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+```
 
-### Resumen rápido:
+### Frontend
 
-1. **Backend en Render**:
-   - Crea un **Blueprint** conectando este repositorio. Render leerá [`render.yaml`](render.yaml) y creará la base de datos PostgreSQL y el servicio `intragrandmotors`.
-   - Variables requeridas en Render:
-     - `DJANGO_ALLOWED_HOSTS`: `intragrandmotors.onrender.com`
-     - `CORS_ALLOWED_ORIGINS`: `https://grandmotors.vercel.app`
-     - `CSRF_TRUSTED_ORIGINS`: `https://grandmotors.vercel.app,https://intragrandmotors.onrender.com`
-     - `PUBLIC_BASE_URL`: `https://intragrandmotors.onrender.com`
+```env
+NEXT_PUBLIC_SITE_URL=https://tu-frontend.vercel.app
+NEXT_PUBLIC_API_URL=https://tu-backend.onrender.com
+API_INTERNAL_URL=https://tu-backend.onrender.com
+```
 
-2. **Frontend en Vercel**:
-   - Importa la carpeta `frontend/`.
-   - Variables requeridas en Vercel:
-     - `NEXT_PUBLIC_SITE_URL`: `https://grandmotors.vercel.app`
-     - `NEXT_PUBLIC_API_URL`: `https://intragrandmotors.onrender.com`
-     - `API_INTERNAL_URL`: `https://intragrandmotors.onrender.com`
+Consulta [DEPLOY.md](DEPLOY.md) para el proceso completo de despliegue y migración de imágenes. No guardes secretos en el repositorio ni expongas las credenciales de Cloudinary en el frontend.
 
----
+## Migrar imágenes históricas
 
-## 📝 Licencia
+Después de aplicar las migraciones y configurar Cloudinary, ejecuta desde `backend/`:
 
-Este proyecto se distribuye bajo la licencia MIT.
+```bash
+python scripts/migrate_images_to_cloudinary.py
+```
+
+El script es idempotente: solo procesa imágenes que todavía no tienen `cloudinary_url`.
+
+## Comprobaciones
+
+```bash
+# Backend
+cd backend
+python manage.py check
+python manage.py test
+
+# Frontend
+cd frontend
+npm run build
+```
+
+## Decisiones destacadas
+
+- **Frontend y backend desacoplados:** Next.js optimiza la experiencia pública y Django mantiene la lógica de negocio y administración.
+- **Slugs decorativos:** las rutas son legibles para SEO, pero la identidad del vehículo sigue dependiendo de su ID estable.
+- **Subida firmada de imágenes:** las credenciales privadas permanecen en el backend; el navegador nunca recibe el API secret de Cloudinary.
+- **Migración gradual:** el modelo conserva un fallback local para no romper registros durante el cambio de proveedor.
+- **Configuración por entorno:** Render y Vercel pueden desplegarse de forma independiente sin hardcodear URLs de infraestructura.
+
+## Licencia
+
+Este proyecto se distribuye bajo licencia MIT.
