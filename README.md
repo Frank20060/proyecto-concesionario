@@ -9,6 +9,12 @@
 
 Grand Motors es un monorepo que combina una experiencia pública de catálogo, optimizada para SEO y conversión, con un panel privado para gestionar el inventario de un concesionario. El proyecto está diseñado como una aplicación real: catálogo filtrable, fichas de vehículo, galería de imágenes, gestión de stock y despliegue separado de frontend y backend.
 
+## Documentación por módulo
+
+- [README del frontend](frontend/README.md): desarrollo Next.js, variables de entorno y despliegue en Vercel.
+- [README del backend](backend/README.md): desarrollo Django, API, panel, migraciones y despliegue en Render.
+- [Guía de despliegue](DEPLOY.md): configuración conjunta de Vercel, Render, PostgreSQL y Cloudinary.
+
 ## Demo
 
 - **Web pública:** [grandmotors.vercel.app](https://grandmotors.vercel.app)
@@ -160,6 +166,24 @@ cd frontend
 npm install
 npm run dev
 ```
+
+### Credenciales locales del panel
+
+Al ejecutar `python manage.py seed_db`, el backend crea un superusuario inicial para desarrollo si todavía no existe uno:
+
+| Usuario | Contraseña |
+| --- | --- |
+| `admin` | `admin1234` |
+
+Estas credenciales son únicamente de demostración local y no deben usarse en entornos públicos o de producción. Para definir otras credenciales antes de sembrar la base de datos:
+
+```env
+ADMIN_USERNAME=tu_usuario
+ADMIN_EMAIL=tu_email@example.com
+ADMIN_PASSWORD=una_contraseña_segura
+```
+
+No guardes contraseñas reales, claves de Cloudinary ni otros secretos en el repositorio. En producción deben configurarse como variables de entorno del servicio.
 
 ## Variables de entorno
 
