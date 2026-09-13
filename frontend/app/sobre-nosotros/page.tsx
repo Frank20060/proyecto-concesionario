@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 
 export default function SobreNosotrosPage() {
   return (
-    <div className="bg-white">
+    <div className="bg-[#30343b]">
       {/* ── Hero corporativo ────────────────────────────────── */}
-      <div className="relative bg-stone-900 py-24 sm:py-32">
+      <div className="about-hero relative overflow-hidden bg-[#1e2024] py-24 sm:py-32">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-stone-900/80 mix-blend-multiply" />
           <Image
@@ -25,7 +25,7 @@ export default function SobreNosotrosPage() {
           />
         </div>
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <p className="text-sm font-semibold uppercase tracking-widest text-stone-400">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-orange-400">
             Nuestra historia
           </p>
           <h1 className="mt-4 font-serif text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
@@ -56,7 +56,7 @@ export default function SobreNosotrosPage() {
               </p>
             </div>
           </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl lg:aspect-auto">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-stone-200 shadow-xl lg:aspect-auto">
             <Image
               src="https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=1200&auto=format&fit=crop"
               alt="Mecánico inspeccionando un vehículo en el taller de Grand Motors"
@@ -68,10 +68,10 @@ export default function SobreNosotrosPage() {
       </div>
 
       {/* ── Compromiso Local ─────────────────────────────────── */}
-      <div className="bg-stone-50 py-16 sm:py-24">
+      <div className="local-commitment bg-[#24282e] py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 lg:items-center">
-            <div className="order-2 lg:order-1 relative aspect-[4/3] overflow-hidden rounded-2xl">
+            <div className="relative order-2 aspect-[4/3] overflow-hidden rounded-2xl border border-stone-200 shadow-xl lg:order-1">
               <Image
                 src="/media/barcelona.png"
                 alt="Espectacular vista aérea de Barcelona, nuestra ciudad"
@@ -98,8 +98,7 @@ export default function SobreNosotrosPage() {
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 20 20"
                       fill="currentColor"
-                      className="mt-1 h-5 w-5 shrink-0"
-                      style={{ color: 'var(--color-brand)' }}
+                      className="mt-1 h-5 w-5 shrink-0 text-orange-700"
                       aria-hidden="true"
                     >
                       <path

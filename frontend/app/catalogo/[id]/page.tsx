@@ -3,12 +3,12 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import VehicleGallery from '@/components/VehicleGallery';
-import WhatsAppButton from '@/components/WhatsAppButton';
 import ScrollToTop from '@/components/ScrollToTop';
 import { StructuredData } from '@/components/StructuredData';
 import { getVehicle } from '@/lib/api/vehicles';
 import { formatDate, formatKm, formatPrice } from '@/lib/format';
 import { siteConfig } from '@/lib/site.config';
+import { buildWhatsAppUrl } from '@/lib/whatsapp';
 
 interface VehicleDetailPageProps {
   params: Promise<{
@@ -75,7 +75,12 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
 
   const price = formatPrice(vehicle.price);
   const interestedCount = 2 + (vehicleId % 5);
-  const waMessage = `Hola, he visto el ${vehicle.brand} ${vehicle.model} ${vehicle.year} (${price}) en vuestra web y me gustaría más información. ¿Está disponible?`;
+  const whatsappUrl = buildWhatsAppUrl({
+    brand: vehicle.brand,
+    model: vehicle.model,
+    year: vehicle.year,
+    price,
+  });
 
   const specs = [
     { label: 'Marca', value: vehicle.brand },
@@ -87,12 +92,10 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
   ];
 
   return (
-    <div className="bg-white">
+    <div className="vehicle-detail-page bg-[#30343b]">
       <ScrollToTop />
       <StructuredData type="vehicle" vehicle={vehicle} price={price} />
-      <WhatsAppButton message={waMessage} />
-
-      <div className="border-b border-stone-200 bg-stone-50">
+      <div className="vehicle-detail-bar border-b border-stone-200 bg-[#292d33]">
         <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
           <nav aria-label="Miga de pan">
             <ol className="flex items-center gap-1.5 text-sm text-stone-500">
@@ -137,11 +140,11 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
               <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-400">
                 Ficha técnica
               </h2>
-              <dl className="mt-4 overflow-hidden rounded-xl border border-stone-200">
+              <dl className="vehicle-detail-table mt-4 overflow-hidden rounded-xl border border-stone-200 bg-[#292d33] shadow-sm">
                 {specs.map((item, index) => (
                   <div
                     key={item.label}
-                    className={`grid grid-cols-2 px-4 py-3.5 sm:px-5 ${index % 2 === 0 ? 'bg-white' : 'bg-stone-50'}`}
+                    className={`grid grid-cols-2 px-4 py-3.5 sm:px-5 ${index % 2 === 0 ? 'bg-[#292d33]' : 'bg-[#343941]'}`}
                   >
                     <dt className="text-sm text-stone-500">{item.label}</dt>
                     <dd className="text-sm font-semibold text-stone-900">{item.value}</dd>
@@ -153,7 +156,7 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
 
           <aside className="lg:col-span-2">
             <div
-              className="sticky top-[7rem] z-40 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-md"
+              className="vehicle-detail-surface sticky top-[7rem] z-40 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-md"
               style={{ boxShadow: 'var(--shadow-card-hover)' }}
             >
               <div className="p-6 sm:p-8">
@@ -173,7 +176,7 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
                 )}
 
                 <div className="mt-5">
-                  <p className="text-3xl font-bold sm:text-4xl" style={{ color: 'var(--color-brand)' }}>
+                  <p className="text-3xl font-bold text-orange-700 sm:text-4xl">
                     {price}
                   </p>
                   <p className="mt-1 text-xs text-stone-400">IVA incluido · Precio al contado</p>
@@ -181,8 +184,7 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
 
                 {vehicle.is_available && (
                   <div
-                    className="mt-4 flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium"
-                    style={{ background: 'rgba(217,119,6,0.08)', color: 'var(--color-accent)' }}
+                    className="mt-4 flex items-center gap-2 rounded-lg bg-orange-50 px-3 py-2 text-xs font-medium text-orange-700"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -206,19 +208,13 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
               {vehicle.is_available && (
                 <div className="space-y-3 border-t border-stone-100 bg-stone-50 px-6 py-5 sm:px-8">
                   <a
-                    href={`tel:${siteConfig.phone}`}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
-                    style={{ background: 'var(--color-accent)' }}
-                  >
-                    Llamar ahora
-                  </a>
-                  <a
-                    href={`https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(waMessage)}`}
+                    href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-3.5 text-sm font-semibold text-stone-900 transition hover:bg-stone-50"
+                    aria-label={`Solicitar información por WhatsApp sobre ${vehicle.brand} ${vehicle.model}`}
+                    className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-orange-700 px-4 py-3.5 text-sm font-bold text-white transition-colors hover:bg-orange-800"
                   >
-                    Contactar por WhatsApp
+                    Solicitar información
                   </a>
                 </div>
               )}

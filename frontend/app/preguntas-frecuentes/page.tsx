@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 
 import FaqAccordion from '@/components/FaqAccordion';
+import DecorativeOrbits from '@/components/DecorativeOrbits';
 import { StructuredData } from '@/components/StructuredData';
+import { buildWhatsAppContactUrl } from '@/lib/whatsapp';
 
 export const metadata: Metadata = {
   title: 'Preguntas Frecuentes | Grand Motors Barcelona',
@@ -60,16 +62,17 @@ export default function FaqPage() {
   }));
 
   return (
-    <div className="bg-stone-50 py-16 sm:py-24">
+    <div className="bg-[#30343b] py-12 sm:py-20">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-stone-400">
+        <div className="faq-hero relative overflow-hidden rounded-3xl bg-[#1e2024] px-6 py-12 text-center text-white sm:px-12">
+          <DecorativeOrbits hideSmall />
+          <p className="relative z-10 text-xs font-semibold uppercase tracking-[0.24em] text-orange-400">
             Soporte al cliente
           </p>
-          <h1 className="mt-2 font-serif text-3xl font-bold text-stone-900 sm:text-4xl">
+          <h1 className="relative z-10 mt-3 font-serif text-3xl font-bold text-white sm:text-5xl">
             Preguntas Frecuentes
           </h1>
-          <p className="mt-4 text-lg text-stone-600">
+          <p className="relative z-10 mt-4 text-lg text-stone-300">
             Resolvemos las dudas más comunes sobre nuestro proceso de compra, garantías y financiación.
           </p>
         </div>
@@ -87,19 +90,13 @@ export default function FaqPage() {
           </p>
           <div className="mt-6 flex flex-col justify-center gap-4 sm:flex-row">
             <a
-              href="tel:+34612345678"
-              className="inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
-              style={{ background: 'var(--color-brand)' }}
-            >
-              Llamar ahora
-            </a>
-            <a
-              href="https://wa.me/34612345678"
+              href={buildWhatsAppContactUrl()}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-stone-200 bg-white px-6 py-3 text-sm font-bold text-stone-700 transition-colors hover:border-stone-300"
+              aria-label="Contactar con Grand Motors por WhatsApp"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-orange-700 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-800"
             >
-              Contactar por WhatsApp
+              Contáctanos por WhatsApp
             </a>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { siteConfig } from '@/lib/site.config';
+import { buildWhatsAppContactUrl } from '@/lib/whatsapp';
 
 /**
  * HeroSection — Bloque hero principal de la homepage.
@@ -13,8 +14,7 @@ import { siteConfig } from '@/lib/site.config';
 export default function HeroSection() {
   return (
     <section
-      className="relative overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, var(--color-brand) 0%, #0f172a 100%)' }}
+      className="relative overflow-hidden bg-[#1e2024]"
       aria-labelledby="hero-heading"
     >
       {/* Patrón decorativo de fondo */}
@@ -53,7 +53,7 @@ export default function HeroSection() {
           >
             Coches de ocasión
             <br />
-            <span style={{ color: 'var(--color-accent)' }}>en Barcelona</span>
+            <span className="text-orange-400">en Barcelona</span>
           </h1>
 
           {/* Subtítulo con propuesta de valor */}
@@ -70,11 +70,7 @@ export default function HeroSection() {
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <Link
               href="#catalogo"
-              className="inline-flex items-center gap-2 rounded-lg px-6 py-3.5 text-sm font-semibold text-white transition-all hover:opacity-90 hover:shadow-lg focus-visible:outline-none"
-              style={{
-                background: 'var(--color-accent)',
-                boxShadow: '0 4px 14px rgba(217,119,6,0.4)',
-              }}
+              className="inline-flex items-center gap-2 rounded-lg bg-orange-700 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-orange-950/30 transition-colors hover:bg-orange-800 focus-visible:outline-none"
             >
               Ver stock disponible
               <svg
@@ -93,7 +89,10 @@ export default function HeroSection() {
             </Link>
 
             <a
-              href={`tel:${siteConfig.phone}`}
+              href={buildWhatsAppContactUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Contactar por WhatsApp"
               className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20"
             >
               <svg
@@ -109,7 +108,7 @@ export default function HeroSection() {
                   clipRule="evenodd"
                 />
               </svg>
-              {siteConfig.phoneDisplay}
+              Contáctanos por WhatsApp
             </a>
           </div>
 
@@ -122,8 +121,7 @@ export default function HeroSection() {
             ].map((stat) => (
               <div key={stat.label}>
                 <p
-                  className="font-serif text-3xl font-bold sm:text-4xl"
-                  style={{ color: 'var(--color-accent)' }}
+                  className="font-serif text-3xl font-bold text-orange-400 sm:text-4xl"
                 >
                   {stat.value}
                 </p>

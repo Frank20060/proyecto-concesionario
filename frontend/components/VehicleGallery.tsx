@@ -31,7 +31,7 @@ export default function VehicleGallery({ images, alt }: VehicleGalleryProps) {
 
   return (
     <div>
-      <div className="relative aspect-[16/10] overflow-hidden border border-stone-200 bg-stone-100">
+      <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm">
         <Image
           src={selectedImage}
           alt={alt}
@@ -49,10 +49,12 @@ export default function VehicleGallery({ images, alt }: VehicleGalleryProps) {
               key={image}
               type="button"
               onClick={() => setSelectedIndex(index)}
+              aria-label={`Ver foto ${index + 1} de ${alt}`}
+              aria-pressed={index === selectedIndex}
               className={`relative aspect-[4/3] overflow-hidden border ${
                 index === selectedIndex
-                  ? 'border-stone-900 ring-2 ring-stone-900'
-                  : 'border-stone-200 hover:border-stone-400'
+                  ? 'border-orange-700 ring-2 ring-orange-700'
+                  : 'border-stone-200 hover:border-orange-600'
               }`}
             >
               <Image

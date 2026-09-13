@@ -121,7 +121,7 @@ export default function UspSection() {
   return (
     <section
       aria-labelledby="usp-heading"
-      className="border-t border-stone-200 bg-gradient-to-b from-stone-50 to-white py-20 sm:py-24"
+      className="border-t border-stone-200 bg-[#f6f5f2] py-20 sm:py-24"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Encabezado con valoración */}
@@ -157,8 +157,7 @@ export default function UspSection() {
             >
               {/* Icono */}
               <div
-                className="inline-flex h-14 w-14 items-center justify-center rounded-xl"
-                style={{ background: 'rgba(217,119,6,0.1)', color: 'var(--color-accent)' }}
+                className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-orange-100 text-orange-700"
               >
                 {usp.icon}
               </div>
@@ -174,8 +173,7 @@ export default function UspSection() {
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
                         fill="currentColor"
-                        className="mt-0.5 h-4 w-4 shrink-0"
-                        style={{ color: 'var(--color-accent)' }}
+                        className="mt-0.5 h-4 w-4 shrink-0 text-orange-700"
                         aria-hidden="true"
                       >
                         <path
@@ -200,30 +198,10 @@ export default function UspSection() {
                   {'cta' in usp && usp.cta && (
                     <div className="mt-6 flex flex-wrap gap-3">
                       <a
-                        href={`tel:${siteConfig.phone}`}
-                        className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                        style={{ background: 'var(--color-accent)' }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="h-4 w-4"
-                          aria-hidden="true"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M2 3.5A1.5 1.5 0 0 1 3.5 2h1.148a1.5 1.5 0 0 1 1.465 1.175l.716 3.223a1.5 1.5 0 0 1-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 0 0 6.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 0 1 1.767-1.052l3.223.716A1.5 1.5 0 0 1 18 16.352V17.5a1.5 1.5 0 0 1-1.5 1.5H15c-8.284 0-15-6.716-15-15V3.5Z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        Llamar ahora
-                      </a>
-                      <a
                         href={`https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent('Hola, me gustaría obtener más información sobre vuestros servicios.')}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-700 transition-colors hover:border-stone-400"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-orange-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-orange-800"
                       >
                         WhatsApp
                       </a>

@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 
 import VehicleFilters from '@/components/VehicleFilters';
 import VehicleGrid from '@/components/VehicleGrid';
+import DecorativeOrbits from '@/components/DecorativeOrbits';
 import {
   getVehicleBrands,
   getVehicles,
@@ -67,9 +68,13 @@ export default async function CatalogoPage({ searchParams }: CatalogoProps) {
   return (
     <div className="bg-[#30343b]">
       {/* ── Cabecera de página ───────────────────────────────── */}
-      <div className="bg-[#1e2024] py-10 text-white sm:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h1 className="font-serif text-3xl font-bold text-white sm:text-4xl">
+      <div className="relative overflow-hidden bg-[#1e2024] py-12 text-white sm:py-20">
+        <DecorativeOrbits />
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-orange-400">
+            Stock revisado
+          </p>
+          <h1 className="mt-3 font-serif text-3xl font-bold text-white sm:text-5xl">
             Catálogo de vehículos
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-stone-300">
@@ -82,9 +87,9 @@ export default async function CatalogoPage({ searchParams }: CatalogoProps) {
       <section
         id="catalogo"
         aria-labelledby="catalog-heading"
-        className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8"
+        className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8 sm:py-16"
       >
-        <div className="mb-8 flex flex-col justify-between gap-4 border-b border-stone-200 pb-4 sm:flex-row sm:items-end">
+        <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <h2
             id="catalog-heading"
             className="text-xl font-bold text-stone-900"

@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import VehicleGallery from '@/components/VehicleGallery';
 import { getVehicle } from '@/lib/api/vehicles';
 import { formatDate, formatKm, formatPrice } from '@/lib/format';
+import { buildWhatsAppUrl } from '@/lib/whatsapp';
 
 interface VehicleDetailPageProps {
   params: Promise<{ id: string }>;
@@ -51,10 +52,17 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
     { label: 'Kilometraje', value: formatKm(vehicle.km) },
     { label: 'Publicado', value: formatDate(vehicle.created_at) },
   ];
+  const price = formatPrice(vehicle.price);
+  const whatsappUrl = buildWhatsAppUrl({
+    brand: vehicle.brand,
+    model: vehicle.model,
+    year: vehicle.year,
+    price,
+  });
 
   return (
-    <div className="bg-white">
-      <div className="border-b border-stone-200 bg-stone-50">
+    <article className="vehicle-detail-page bg-[#30343b]">
+      <div className="vehicle-detail-bar border-b border-stone-200 bg-[#292d33]">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <Link
             href="/"
@@ -73,7 +81,7 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
               alt={`${vehicle.brand} ${vehicle.model}`}
             />
 
-            <div className="mt-10">
+            <div className="vehicle-detail-surface mt-10 rounded-2xl border border-stone-200 bg-white p-6 sm:p-8">
               <h2 className="text-sm font-medium uppercase tracking-wider text-stone-400">
                 Descripción del vehículo
               </h2>
@@ -86,11 +94,11 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
               <h2 className="text-sm font-medium uppercase tracking-wider text-stone-400">
                 Ficha técnica
               </h2>
-              <dl className="mt-4 divide-y divide-stone-200 border border-stone-200">
+              <dl className="vehicle-detail-table mt-4 overflow-hidden rounded-xl border border-stone-200 bg-[#292d33] shadow-sm">
                 {specs.map((item) => (
                   <div
                     key={item.label}
-                    className="grid grid-cols-2 px-4 py-3.5 sm:px-5"
+                    className="grid grid-cols-2 px-4 py-3.5 even:bg-[#343941] sm:px-5"
                   >
                     <dt className="text-sm text-stone-500">{item.label}</dt>
                     <dd className="text-sm font-medium text-stone-900">{item.value}</dd>
@@ -101,7 +109,7 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
           </div>
 
           <div className="lg:col-span-2">
-            <div className="sticky top-8 border border-stone-200 bg-white p-6 sm:p-8">
+            <div className="vehicle-detail-surface sticky top-8 overflow-hidden rounded-2xl border border-stone-200 bg-white p-6 shadow-xl sm:p-8">
               <p className="text-xs font-medium uppercase tracking-wider text-stone-400">
                 {vehicle.brand}
               </p>
@@ -119,27 +127,22 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
                 </div>
               )}
 
-              <p className="mt-6 text-3xl font-semibold text-stone-900">
-                {formatPrice(vehicle.price)}
+              <p className="mt-6 text-3xl font-semibold text-orange-700">
+                {price}
               </p>
               <p className="mt-1 text-sm text-stone-500">IVA incluido · Precio al contado</p>
 
               <div className="mt-8 space-y-3">
                 {vehicle.is_available ? (
-                  <>
-                    <button
-                      type="button"
-                      className="w-full bg-stone-900 px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-stone-800"
-                    >
-                      Solicitar información
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full border border-stone-300 bg-white px-6 py-3.5 text-sm font-medium text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
-                    >
-                      Solicitar prueba de conducción
-                    </button>
-                  </>
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Solicitar información por WhatsApp sobre ${vehicle.brand} ${vehicle.model}`}
+                    className="flex min-h-12 w-full items-center justify-center rounded-xl bg-orange-700 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-orange-800"
+                  >
+                    Solicitar información
+                  </a>
                 ) : (
                   <p className="text-sm text-stone-500">
                     Este vehículo no está disponible para reserva
@@ -157,6 +160,6 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

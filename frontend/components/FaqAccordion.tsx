@@ -13,7 +13,7 @@ interface FaqAccordionProps {
 }
 
 export default function FaqAccordion({ items }: FaqAccordionProps) {
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(items[0]?.id ?? null);
 
   const toggle = (id: string) => {
     setOpenId((prev) => (prev === id ? null : id));
@@ -26,7 +26,7 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
         return (
           <div
             key={item.id}
-            className="overflow-hidden rounded-xl border border-stone-200 bg-white"
+            className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition-shadow hover:shadow-md"
           >
             <h3>
               <button
@@ -34,13 +34,13 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
                 aria-expanded={isOpen}
                 aria-controls={`faq-answer-${item.id}`}
                 onClick={() => toggle(item.id)}
-                className="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-stone-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2"
+                className="flex min-h-16 w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-stone-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
               >
                 <span className="font-semibold text-stone-900">
                   {item.question}
                 </span>
                 <span
-                  className="ml-4 flex shrink-0 items-center justify-center text-stone-400 transition-transform duration-300"
+                  className="ml-4 flex shrink-0 items-center justify-center text-orange-700 transition-transform duration-300"
                   style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)' }}
                   aria-hidden="true"
                 >

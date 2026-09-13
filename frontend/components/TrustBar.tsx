@@ -103,7 +103,7 @@ const trustItems = [
 
 export default function TrustBar() {
   return (
-    <section aria-label="Nuestras garantías" className="border-y border-stone-200 bg-stone-50">
+    <section aria-label="Nuestras garantías" className="border-y border-stone-200 bg-white">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <ul className="grid grid-cols-2 gap-6 lg:grid-cols-4">
           {trustItems.map((item) => (
@@ -115,8 +115,8 @@ export default function TrustBar() {
               <span
                 className="flex h-14 w-14 items-center justify-center rounded-full transition-colors"
                 style={{
-                  background: 'rgba(217,119,6,0.1)',
-                  color: 'var(--color-accent)',
+                  background: 'rgba(181,88,43,0.16)',
+                  color: '#e7a17f',
                 }}
               >
                 {item.icon}

@@ -1,40 +1,53 @@
 import Link from 'next/link';
 
+import ThemeToggle from '@/components/ThemeToggle';
+import { buildWhatsAppContactUrl } from '@/lib/whatsapp';
+
 export default function Header() {
   return (
-    <header className="border-b border-stone-200 bg-white">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#1e2024] text-white shadow-lg">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex flex-col">
           <span
-            className="font-serif text-xl font-semibold tracking-tight text-stone-900 sm:text-2xl"
+            className="font-serif text-xl font-semibold tracking-tight text-white sm:text-2xl"
             style={{ fontFamily: 'var(--font-playfair), Georgia, serif' }}
           >
             Grand Motors
           </span>
-          <span className="text-[11px] uppercase tracking-[0.2em] text-stone-500">
+          <span className="text-[11px] uppercase tracking-[0.2em] text-stone-400">
             Concesionario oficial
           </span>
         </Link>
 
-        <nav className="flex items-center gap-8">
+        <nav className="flex items-center gap-3 sm:gap-6">
           <Link
-            href="/"
-            className="text-sm font-medium text-stone-600 transition-colors hover:text-stone-900"
+            href="/vehicles"
+            className="text-sm font-semibold text-stone-300 transition-colors hover:text-white"
           >
-            Vehículos en venta
+            Catálogo
           </Link>
+          <Link
+            href="/preguntas-frecuentes"
+            className="text-sm font-medium text-stone-300 transition-colors hover:text-white"
+          >
+            FAQ
+          </Link>
+          <Link
+            href="/sobre-nosotros"
+            className="hidden text-sm font-medium text-stone-300 transition-colors hover:text-white md:block"
+          >
+            Sobre nosotros
+          </Link>
+          <ThemeToggle />
           <a
-            href="tel:+34900000000"
-            className="hidden text-sm text-stone-600 transition-colors hover:text-stone-900 sm:block"
+            href={buildWhatsAppContactUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Contactar con Grand Motors por WhatsApp"
+            className="rounded-lg bg-orange-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-orange-800 sm:px-5"
           >
-            900 000 000
+            Contáctanos
           </a>
-          <Link
-            href="/"
-            className="border border-stone-900 bg-stone-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-stone-800"
-          >
-            Contactar
-          </Link>
         </nav>
       </div>
     </header>
