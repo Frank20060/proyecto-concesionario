@@ -65,7 +65,7 @@ export default function FaqPage() {
     <div className="bg-[#30343b] py-12 sm:py-20">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="faq-hero relative overflow-hidden rounded-3xl bg-[#1e2024] px-6 py-12 text-center text-white sm:px-12">
-          <DecorativeOrbits hideSmall />
+          <DecorativeOrbits />
           <p className="relative z-10 text-xs font-semibold uppercase tracking-[0.24em] text-orange-400">
             Soporte al cliente
           </p>
