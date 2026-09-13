@@ -24,7 +24,9 @@ class VehicleImage(models.Model):
         on_delete=models.CASCADE,
         related_name='images',
     )
-    image = models.ImageField(upload_to='vehicles/')
+    image = models.ImageField(upload_to='vehicles/', blank=True, null=True)
+    cloudinary_url = models.URLField(blank=True)
+    cloudinary_public_id = models.CharField(max_length=255, blank=True)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 

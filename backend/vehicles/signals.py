@@ -1,6 +1,7 @@
 from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
 
+from .cloudinary_service import delete_image
 from .models import VehicleImage
 
 
@@ -14,7 +15,7 @@ def delete_old_image_on_change(sender, instance, **kwargs):
     except VehicleImage.DoesNotExist:
         return
 
-    if old_instance.image != instance.image:
+    if old_instance.image and old_instance.image != instance.image:
         old_instance.image.delete(save=False)
 
 
@@ -22,3 +23,5 @@ def delete_old_image_on_change(sender, instance, **kwargs):
 def delete_image_file(sender, instance, **kwargs):
     if instance.image:
         instance.image.delete(save=False)
+    if instance.cloudinary_public_id:
+        delete_image(instance.cloudinary_public_id)

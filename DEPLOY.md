@@ -43,6 +43,11 @@ Copia desde [`backend/.env.example`](backend/.env.example) y ajusta:
 | `CSRF_TRUSTED_ORIGINS` | `https://grandmotors.vercel.app,https://intragrandmotors.onrender.com` |
 | `PUBLIC_BASE_URL` | `https://intragrandmotors.onrender.com` |
 | `MEDIA_ROOT` | `/app/media` |
+| `CLOUDINARY_CLOUD_NAME` | Cloud name de Cloudinary |
+| `CLOUDINARY_API_KEY` | API key de Cloudinary |
+| `CLOUDINARY_API_SECRET` | API secret de Cloudinary |
+
+`CLOUDINARY_UPLOAD_PRESET` no es necesario: el dashboard envía los archivos a Django y Django los sube con la API firmada.
 
 ### Primer arranque
 
@@ -105,12 +110,18 @@ docker compose up --build
 
 ## 5. Notas importantes
 
-### Plan free de Render
+### Imágenes en Cloudinary
 
 - El servicio **se duerme** tras inactividad (~50 s de cold start).
-- El disco persistente **no está en plan free** del web service — en free las fotos se pierden al redeploy. Para producción real:
-  - Sube a plan Starter + disco, **o**
-  - Integra almacenamiento externo (S3 / Cloudinary).
+- Las imágenes nuevas se suben directamente a Cloudinary.
+- Para migrar las imágenes antiguas, instala dependencias y ejecuta desde `backend/`:
+
+```bash
+python scripts/migrate_images_to_cloudinary.py
+```
+
+- Verifica el resultado antes de retirar el disco o borrar archivos locales.
+- Después de migrar y comprobar las imágenes, puedes retirar el disco persistente y eliminar el bloque `media/` de `backend/config/urls.py`.
 
 ### HTTPS
 

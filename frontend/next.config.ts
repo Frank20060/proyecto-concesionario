@@ -29,6 +29,11 @@ function getRemoteImagePatterns(): NonNullable<
       hostname: '*.onrender.com',
       pathname: '/media/**',
     },
+    {
+      protocol: 'https',
+      hostname: 'res.cloudinary.com',
+      pathname: '/**',
+    },
   ];
 
   try {

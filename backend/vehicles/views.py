@@ -9,6 +9,7 @@ from django.views.decorators.http import require_GET, require_http_methods, requ
 from .forms import VehicleForm
 from .metrics import get_dashboard_metrics
 from .models import Vehicle, VehicleImage
+from .cloudinary_service import upload_image
 
 
 # --- API JSON (pública, sin login) ---
@@ -32,7 +33,9 @@ def vehicle_to_dict(vehicle, request=None):
         'is_available': vehicle.is_available,
         'created_at': vehicle.created_at.isoformat(),
         'images': [
-            f'{base}{image.image.url}'
+            image.cloudinary_url or (
+                f'{base}{image.image.url}' if image.image else ''
+            )
             for image in vehicle.images.all()
         ],
     }
@@ -46,9 +49,11 @@ def save_vehicle_images(vehicle, files):
     next_order = 0 if max_order is None else max_order + 1
 
     for uploaded_file in files:
+        upload = upload_image(uploaded_file, vehicle)
         VehicleImage.objects.create(
             vehicle=vehicle,
-            image=uploaded_file,
+            cloudinary_url=upload['secure_url'],
+            cloudinary_public_id=upload['public_id'],
             order=next_order,
         )
         next_order += 1

@@ -1,10 +1,6 @@
 import { PUBLIC_API_URL } from '@/lib/config';
 import type { Vehicle } from '@/types/vehicle';
 
-/**
- * Convierte URLs absolutas del backend en rutas relativas /media/...
- * para que next/image las sirva vía rewrite al backend (Docker-safe).
- */
 export function normalizeMediaUrl(url: string): string {
   if (!url) {
     return '';
@@ -17,6 +13,10 @@ export function normalizeMediaUrl(url: string): string {
 
   if (trimmed.startsWith('/media/')) {
     return trimmed;
+  }
+
+  if (/^https:\/\/res\.cloudinary\.com\//i.test(trimmed)) {
+    return optimizeCloudinaryUrl(trimmed);
   }
 
   const mediaMatch = trimmed.match(/^(?:https?:\/\/[^/]+)?(\/media\/.*)$/i);
@@ -40,6 +40,14 @@ export function normalizeMediaUrl(url: string): string {
     .replace('https://localhost:8000', '')
     .replace(PUBLIC_API_URL.replace(/\/$/, ''), '')
     .replace(/^https?:\/\/[^/]+(?=\/media\/)/, '');
+}
+
+export function optimizeCloudinaryUrl(url: string): string {
+  if (!/^https:\/\/res\.cloudinary\.com\//i.test(url)) {
+    return url;
+  }
+
+  return url.replace('/upload/', '/upload/f_auto,q_auto/');
 }
 
 export function getVehicleImageUrl(vehicle: Vehicle): string | null {
